@@ -1,0 +1,625 @@
+etcd::version: 'v3.2.7'
+
+mysql::users::root::password: 'password'
+mysql::users::keystone::password: 'password'
+mysql::users::glance::password: 'password'
+mysql::users::neutron::password: 'password'
+mysql::users::nova::password: 'password'
+mysql::users::cinder::password: 'password'
+mysql::users::heat::password: 'password'
+mysql::users::zaqar::password: 'password'
+mysql::users::zun::password: 'password'
+mysql::users::gnocchi::password: 'password'
+mysql::users::barbican::password: 'password'
+mysql::users::senlin::password: 'password'
+mysql::users::magnum::password: 'password'
+
+rabbitmq::users::keystone::password: 'password'
+rabbitmq::users::glance::password: 'password'
+rabbitmq::users::neutron::password: 'password'
+rabbitmq::users::nova::password: 'password'
+rabbitmq::users::cinder::password: 'password'
+rabbitmq::users::heat::password: 'password'
+rabbitmq::users::zun::password: 'password'
+rabbitmq::users::barbican::password: 'password'
+rabbitmq::users::senlin::password: 'password'
+rabbitmq::users::magnum::password: 'password'
+
+openstack::region: 'RegionOne'
+openstack::keystone::host: 'keystone'
+openstack::metadata::password: 'password'
+
+openstack::users::admin::password: 'password'
+openstack::users::demo::password: 'password'
+openstack::users::glance::password: 'password'
+openstack::users::neutron::password: 'password'
+openstack::users::nova::password: 'password'
+openstack::users::cinder::password: 'password'
+openstack::users::heat::password: 'password'
+openstack::users::zaqar::password: 'password'
+openstack::users::zun::password: 'password'
+openstack::users::kuryr::password: 'password'
+openstack::users::swift::password: 'password'
+openstack::users::gnocchi::password: 'password'
+openstack::users::barbican::password: 'password'
+openstack::users::senlin::password: 'password'
+openstack::users::magnum::password: 'password'
+
+openstack::keystone::settings:
+  'DEFAULT/use_stderr': false
+  'DEFAULT/debug': false
+  'DEFAULT/admin_endpoint': 'http://keystone:5000'
+  'DEFAULT/fatal_deprecations': false
+  'DEFAULT/member_role_name': '_member_'
+  'DEFAULT/log_file': 'keystone.log'
+  'DEFAULT/log_dir': '/var/log/keystone'
+  'DEFAULT/transport_url': "rabbit://keystone:%{lookup('rabbitmq::users::keystone::password')}@infra:5672/openstack"
+  'catalog/driver': 'templated'
+  'catalog/template_file': '/etc/keystone/default_catalog.templates'
+  'cache/backend': 'dogpile.cache.memcached'
+  'cache/memcache_servers': 'infra:11211'
+  'cache/config_prefix': 'cache.keystone'
+  'cache/distributed_lock': true
+  'cache/enabled': true
+  'revoke/driver': 'sql'
+  'revoke/expiration_buffer': 1800
+  'revoke/cache_time': 3600
+  'auth/methods': 'password,token'
+  'database/connection': "mysql+pymysql://keystone:%{lookup('mysql::users::keystone::password')}@infra/keystone?charset=utf8"
+  'database/idle_timeout': 200
+  'database/min_pool_size': 2
+  'database/max_pool_size': 120
+  'database/pool_timeout': 30
+  'fernet_tokens/key_repository': '/etc/keystone/fernet-keys'
+  'fernet_tokens/max_active_keys': 1
+  'identity/driver': 'sql'
+  'assignment/driver': 'sql'
+  'resource/cache_time': 3600
+  'resource/driver': 'sql'
+  'token/enforce_token_bind': 'permissive'
+  'token/expiration': 43200
+  'token/cache_time': 3600
+  'token/provider': 'fernet'
+  'credential/key_repository': '/etc/keystone/credential-keys'
+
+openstack::glance::settings:
+  'DEFAULT/use_stderr': false
+  'DEFAULT/debug': false
+  'DEFAULT/log_file': '/var/log/glance/glance-api.log'
+  'DEFAULT/fatal_deprecations': false
+  'DEFAULT/bind_host': '0.0.0.0'
+  'DEFAULT/bind_port': 9292
+  'DEFAULT/http_keepalive': true
+  'DEFAULT/digest_algorithm': 'sha256'
+  'DEFAULT/backlog': 4096
+  'DEFAULT/workers': 2
+  'DEFAULT/registry_host': 'glance'
+  'DEFAULT/registry_port': 9191
+  'DEFAULT/registry_client_protocol': 'http'
+  'DEFAULT/cinder_catalog_info': 'volume:cinder:internalURL'
+  'DEFAULT/enable_v1_api': false
+  'DEFAULT/enable_v1_registry': false
+  'DEFAULT/enable_v2_api': true
+  'DEFAULT/enable_v2_registry': false
+  'DEFAULT/transport_url': "rabbit://glance:%{lookup('rabbitmq::users::glance::password')}@infra:5672/openstack"
+  'DEFAULT/delayed_delete': false
+  'DEFAULT/scrub_time': 43200
+  'DEFAULT/image_cache_dir': '/var/lib/glance/cache/'
+  'DEFAULT/show_image_direct_url': false
+  'DEFAULT/show_multiple_locations': false
+  'task/task_executor': 'taskflow'
+  'database/connection': "mysql+pymysql://glance:%{lookup('mysql::users::glance::password')}@infra/glance?charset=utf8"
+  'keystone_authtoken/insecure': false
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_url': 'http://keystone:5000/v3'
+  'keystone_authtoken/auth_uri': 'http://keystone:5000'
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/user_domain_id': 'default'
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/username': 'glance'
+  'keystone_authtoken/password': "%{lookup('openstack::users::glance::password')}"
+  'keystone_authtoken/region_name': "%{lookup('openstack::region')}"
+  'keystone_authtoken/memcached_servers': 'infra:11211'
+  'keystone_authtoken/token_cache_time': 300
+  'keystone_authtoken/memcache_security_strategy': 'ENCRYPT'
+  'keystone_authtoken/memcache_secret_key': 'foobar'
+  'oslo_policy/policy_file': 'policy.json'
+  'oslo_policy/policy_default_rule': 'default'
+  'oslo_policy/policy_dirs': 'policy.d'
+  'oslo_messaging_rabbit/rabbit_notification_exchange': 'glance'
+  'oslo_messaging_rabbit/rabbit_notification_topic': 'notifications'
+  'paste_deploy/flavor': 'keystone+cachemanagement'
+  'glance_store/default_store': 'file'
+  'glance_store/stores': 'file,http,cinder'
+  'glance_store/filesystem_store_datadir': '/var/lib/glance/images/'
+  'oslo_middleware/enable_proxy_headers_parsing': true
+
+openstack::neutron::settings:
+  'DEFAULT/use_stderr': false
+  'DEFAULT/verbose': true
+  'DEFAULT/debug': true
+  'DEFAULT/fatal_deprecations': false
+  'DEFAULT/log_file': '/var/log/neutron/neutron.log'
+  'DEFAULT/executor_thread_pool_size': 64
+  'DEFAULT/rpc_response_timeout': 60
+  'DEFAULT/transport_url': "rabbit://neutron:%{lookup('rabbitmq::users::neutron::password')}@infra:5672/openstack"
+  'DEFAULT/control_exchange': 'openstack'
+  'DEFAULT/allow_overlapping_ips': true
+  'DEFAULT/vlan_transparent': true
+  'DEFAULT/core_plugin': 'ml2'
+  #'DEFAULT/service_plugins': 'router,qos,neutron.services.firewall.fwaas_plugin.FirewallPlugin,neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2'
+  'DEFAULT/service_plugins': 'router,qos,neutron.services.firewall.fwaas_plugin.FirewallPlugin,trunk'
+  'DEFAULT/base_mac': 'fa:16:3e:00:00:00'
+  'DEFAULT/mac_generation_retries': 16
+  'DEFAULT/auth_strategy': 'keystone'
+  'DEFAULT/network_scheduler_driver': 'neutron.scheduler.dhcp_agent_scheduler.WeightScheduler'
+  'DEFAULT/router_scheduler_driver': 'neutron.scheduler.l3_agent_scheduler.LeastRoutersScheduler'
+  'DEFAULT/loadbalancer_pool_scheduler_driver': 'neutron_lbaas.services.loadbalancer.agent_scheduler.ChanceScheduler'
+  'DEFAULT/network_auto_schedule': true
+  'DEFAULT/router_auto_schedule': true
+  'DEFAULT/router_distributed': false
+  'DEFAULT/enable_dvr': false
+  'DEFAULT/agent_down_time': 120
+  'DEFAULT/bind_port': 9696
+  'DEFAULT/bind_host': '0.0.0.0'
+  'DEFAULT/api_workers': 2
+  'DEFAULT/rpc_workers': 1
+  'DEFAULT/dhcp_agent_notification': true
+  'DEFAULT/dhcp_agents_per_network': 2
+  'DEFAULT/dhcp_lease_duration': 86400
+  'DEFAULT/notify_nova_on_port_status_changes': true
+  'DEFAULT/notify_nova_on_port_data_changes': true
+  'DEFAULT/send_events_interval': 2
+  'DEFAULT/dns_domain': 'example.com'
+  'nova/auth_type': 'password'
+  'nova/auth_url': 'http://keystone:5000/v3'
+  'nova/region_name': "%{lookup('openstack::region')}"
+  'nova/project_domain_id': 'default'
+  'nova/user_domain_id': 'default'
+  'nova/project_name': 'services'
+  'nova/username': 'nova'
+  'nova/password': "%{lookup('openstack::users::nova::password')}"
+  'nova/endpoint_type': 'internal'
+  'keystone_authtoken/insecure': false
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_url': 'http://keystone:5000'
+  'keystone_authtoken/auth_uri': 'http://keystone:5000'
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/user_domain_id': 'default'
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/username': 'neutron'
+  'keystone_authtoken/password': "%{lookup('openstack::users::neutron::password')}"
+  'keystone_authtoken/region_name': "%{lookup('openstack::region')}"
+  'keystone_authtoken/memcached_servers': 'infra:11211'
+  'keystone_authtoken/token_cache_time': 300
+  'keystone_authtoken/memcache_security_strategy': 'ENCRYPT'
+  'keystone_authtoken/memcache_secret_key': 'foobar'
+  'database/connection': "mysql+pymysql://neutron:%{lookup('mysql::users::neutron::password')}@infra/neutron?charset=utf8"
+  'database/max_overflow': 20
+  'database/max_pool_size': 120
+  'database/pool_timeout': 30
+  'agent/polling_interval': 5
+  'agent/report_interval': 60
+  'agent/root_helper': 'sudo /usr/bin/neutron-rootwrap /etc/neutron/rootwrap.conf'
+  'service_providers/service_provider': 'LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default'
+
+openstack::neutron::dhcp::settings:
+  'DEFAULT/debug': false
+  'DEFAULT/num_sync_threads': 2
+  'DEFAULT/interface_driver': 'linuxbridge'
+  'DEFAULT/dhcp_driver': 'neutron.agent.linux.dhcp.Dnsmasq'
+  'DEFAULT/dnsmasq_config_file': '---'
+  'DEFAULT/dnsmasq_dns_servers': '8.8.8.8'
+  'DEFAULT/dnsmasq_lease_max': 16777216
+  'DEFAULT/enable_isolated_metadata': true
+
+openstack::neutron::l3::settings:
+  'DEFAULT/debug': false
+  'DEFAULT/interface_driver': 'linuxbridge'
+  'DEFAULT/agent_mode': 'legacy'
+  'DEFAULT/allow_automatic_l3agent_failover': true
+  'DEFAULT/ha_confs_path': '/var/lib/neutron/ha_confs'
+  'DEFAULT/ha_vrrp_advert_int': 2
+  'DEFAULT/ha_vrrp_auth_password':
+  'DEFAULT/ha_vrrp_auth_type': 'PASS'
+  'DEFAULT/enable_metadata_proxy': true
+  'AGENT/extensions': 'fwaas'
+
+openstack::neutron::metadata::settings:
+  'DEFAULT/auth_region': "%{lookup('openstack::region')}"
+  'DEFAULT/auth_type': 'password'
+  'DEFAULT/auth_uri': 'http://keystone:5000'
+  'DEFAULT/auth_url': 'http://keystone:5000/v3'
+  'DEFAULT/cache_url': 'memory://infra::11211?default_ttl=5'
+  'DEFAULT/debug': false
+  'DEFAULT/endpoint_type': 'adminURL'
+  'DEFAULT/metadata_backlog': 4096
+  'DEFAULT/metadata_proxy_shared_secret': "%{lookup('openstack::metadata::password')}"
+  'DEFAULT/metadata_workers': 2
+  'DEFAULT/nova_metadata_host': 'nova'
+  'DEFAULT/nova_metadata_insecure': false
+  'DEFAULT/nova_metadata_port': 8775
+  'DEFAULT/nova_metadata_protocol': 'http'
+  'DEFAULT/password': "%{lookup('openstack::users::nova::password')}"
+  'DEFAULT/project_domain_id': 'default'
+  'DEFAULT/project_name': 'services'
+  'DEFAULT/user_domain_id': 'default'
+  'DEFAULT/username': 'neutron'
+
+openstack::neutron::linuxbridge::settings:
+  'linux_bridge/physical_interface_mappings': 'provider:eth0'
+  'vxlan/enable_vxlan': true
+  'vxlan/vxlan_group': '---'
+  'vxlan/local_ip': "%{facts.networking.ip}"
+  'vxlan/l2_population': true
+  'securitygroup/firewall_driver': 'iptables'
+  'securitygroup/enable_security_group': true
+
+openstack::neutron::ml2::settings:
+  'ml2/type_drivers': 'vxlan,flat'
+  'ml2/tenant_network_types': 'vxlan'
+  'ml2/mechanism_drivers': 'linuxbridge,l2population'
+  'ml2/extension_drivers': 'port_security,qos,dns_domain_ports'
+  'ml2_type_vxlan/vxlan_group': '---'
+  'ml2_type_vxlan/vni_ranges': '1:1000'
+  'securitygroup/enable_security_group': true
+  'securitygroup/enable_ipset': true
+
+openstack::neutron::fwaas::settings:
+  'fwaas/enabled': True
+  'fwaas/agent_version': 'v1'
+  'fwaas/driver': 'iptables'
+
+openstack::neutron::lbaas::settings:
+  'DEFAULT/interface_driver': 'linuxbridge'
+  'DEFAULT/device_driver': 'neutron_lbaas.drivers.haproxy.namespace_driver.HaproxyNSDriver'
+  'service_providers/service_provider': 'LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default'
+
+openstack::nova::settings:
+  'DEFAULT/use_stderr': false
+  'DEFAULT/verbose': true
+  'DEFAULT/debug': true
+  'DEFAULT/cpu_allocation_ratio': 16.0
+  'DEFAULT/disk_allocation_ratio': 10.0
+  'DEFAULT/ram_allocation_ratio': 4.0
+  'DEFAULT/compute_driver': 'libvirt.LibvirtDriver'
+  'DEFAULT/allow_resize_to_same_host': true
+  'DEFAULT/enabled_apis': 'osapi_compute,metadata'
+  'DEFAULT/osapi_compute_workers': 2
+  'DEFAULT/transport_url': "rabbit://nova:%{lookup('rabbitmq::users::nova::password')}@infra:5672/openstack"
+  'DEFAULT/metadata_workers': 2
+  'DEFAULT/my_ip': "%{facts.networking.ip}"
+  'DEFAULT/libvirt_vif_type': 'ethernet'
+  'DEFAULT/vif_plugging_timeout': 10
+  'DEFAULT/vif_plugging_is_fatal': false
+  'cache/enabled': true
+  'cache/backend': 'oslo_cache.memcache_pool'
+  'cache/memcache_servers': 'infra:11211'
+  'cinder/catalog_info': 'volumev3:cinderv3:internalURL'
+  'cinder/os_region_name': "%{lookup('openstack::region')}"
+  'glance/api_servers': 'http://glance:9292'
+  'neutron/url': 'http://neutron:9696'
+  'neutron/region_name': "%{lookup('openstack::region')}"
+  'neutron/auth_type': 'password'
+  'neutron/default_floating_pool': 'public'
+  'neutron/password': "%{lookup('openstack::users::neutron::password')}"
+  'neutron/username': 'neutron'
+  'neutron/project_name': 'services'
+  'neutron/user_domain_name': 'Default'
+  'neutron/project_domain_name': 'Default'
+  'neutron/auth_url': 'http://keystone:5000/v3'
+  'neutron/metadata_proxy_shared_secret': "%{lookup('openstack::metadata::password')}"
+  'neutron/service_metadata_proxy': true
+  'placement/region_name': "%{lookup('openstack::region')}"
+  'placement/auth_type': 'password'
+  'placement/password': "%{lookup('openstack::users::nova::password')}"
+  'placement/username': 'nova'
+  'placement/project_name': 'services'
+  'placement/user_domain_name': 'Default'
+  'placement/project_domain_name': 'Default'
+  'placement/auth_url': 'http://keystone:5000/v3'
+  'conductor/workers': 2
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_url': 'http://keystone:5000'
+  'keystone_authtoken/auth_uri': 'http://keystone:5000'
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/user_domain_id': 'default'
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/username': 'nova'
+  'keystone_authtoken/password': "%{lookup('openstack::users::nova::password')}"
+  'keystone_authtoken/region_name': "%{lookup('openstack::region')}"
+  'keystone_authtoken/memcached_servers': 'infra:11211'
+  'keystone_authtoken/token_cache_time': 300
+  'keystone_authtoken/memcache_security_strategy': 'ENCRYPT'
+  'keystone_authtoken/memcache_secret_key': 'foobar'
+  'database/connection': "mysql+pymysql://nova:%{lookup('mysql::users::nova::password')}@infra/nova?charset=utf8"
+  'api_database/connection': "mysql+pymysql://nova:%{lookup('mysql::users::nova::password')}@infra/nova_api?charset=utf8"
+  'libvirt/inject_partition': -2
+  'libvirt/use_virtio_for_bridges': true
+  'libvirt/virt_type': 'qemu'
+  'api/auth_strategy': 'keystone'
+  'api/enable_instance_password': true
+
+openstack::cinder::settings:
+  'DEFAULT/enable_v3_api': true
+  'DEFAULT/default_volume_type': 'nfs'
+  'DEFAULT/auth_strategy': 'keystone'
+  'DEFAULT/enabled_backends': 'nfs'
+  'DEFAULT/nova_catalog_info': 'compute:nova:publicURL'
+  'DEFAULT/nova_catalog_admin_info': 'compute:nova:adminURL'
+  'DEFAULT/osapi_volume_listen': '0.0.0.0'
+  'DEFAULT/osapi_volume_workers': 2
+  'DEFAULT/transport_url': "rabbit://cinder:%{lookup('rabbitmq::users::cinder::password')}@infra:5672/openstack"
+  'DEFAULT/control_exchange': 'openstack'
+  'DEFAULT/glance_host': 'glance'
+  'DEFAULT/backup_driver': 'cinder.backup.drivers.nfs'
+  'DEFAULT/backup_share': 'cinder:/srv/nfs'
+  'database/connection': "mysql+pymysql://cinder:%{lookup('mysql::users::cinder::password')}@infra/cinder"
+  'keystone_authtoken/auth_uri': 'http://keystone:5000/'
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_url': 'http://keystone:35357'
+  'keystone_authtoken/username': 'cinder'
+  'keystone_authtoken/password': "%{lookup('openstack::users::cinder::password')}"
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/user_domain_id': 'default'
+  'nfs/volume_backend_name': 'nfs'
+  'nfs/volume_driver': 'cinder.volume.drivers.nfs.NfsDriver'
+  'nfs/nfs_shares_config': '/etc/cinder/nfs_shares.conf'
+  'nfs/nfs_mount_options': 'vers=3'
+  'nfs/nfs_snapshot_support': true
+  'nfs/nas_secure_file_operations': false
+
+openstack::heat::settings:
+  'DEFAULT/heat_metadata_server_url': "http://heat:8000"
+  'DEFAULT/heat_waitcondition_server_url': "http://heat:8000/v1/waitcondition"
+  'DEFAULT/rpc_backend': 'rabbit'
+  'DEFAULT/debug': 'true'
+  'DEFAULT/verbose': 'true'
+  'DEFAULT/num_engine_workers': 2
+  'DEFAULT/region_name_for_services': "%{hiera('openstack::region')}"
+  'DEFAULT/enable_stack_abandon': 'true'
+  'DEFAULT/transport_url': "rabbit://heat:%{lookup('rabbitmq::users::keystone::password')}@infra:5672/openstack"
+  'clients_keystone/auth_uri': "http://keystone:5000"
+  'database/connection': "mysql://heat:%{hiera('mysql::users::heat::password')}@infra/heat"
+  'heat_api/bind_host': '::'
+  'heat_api/bind_port': '8004'
+  'heat_api_cfn/bind_host': '::'
+  'heat_api_cfn/bind_port': '8000'
+  'heat_api/workers': 2
+  'DEFAULT/deferred_auth_method': 'trusts'
+  'DEFAULT/stack_domain_admin': 'heat_domain_admin'
+  'DEFAULT/stack_domain_admin_password': "%{hiera('openstack::users::heat::password')}"
+  'DEFAULT/stack_user_domain_name': 'heat'
+  'trustee/auth_type': 'password'
+  'trustee/auth_url': "http://keystone:35357/v3"
+  'trustee/user_domain_name': 'default'
+  'trustee/user_name': 'heat'
+  'trustee/password': "%{hiera('openstack::users::heat::password')}"
+  'keystone_authtoken/auth_uri': 'http://keystone:5000/'
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_url': 'http://keystone:35357'
+  'keystone_authtoken/username': 'cinder'
+  'keystone_authtoken/password': "%{lookup('openstack::users::heat::password')}"
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/user_domain_id': 'default'
+
+openstack::zaqar::settings:
+  'DEFAULT/admin_mode': true
+  'DEFAULT/auth_strategy': 'keystone'
+  'DEFAULT/debug': false
+  'DEFAULT/pooling': true
+  'DEFAULT/unreliable': true
+  'DEFAULT/use_stderr': false
+  'drivers/management_store': 'sqlalchemy'
+  'drivers/message_store': 'redis'
+  'drivers:management_store:sqlalchemy/uri': "mysql+pymysql://zaqar:%{lookup('mysql::users::zaqar::password')}@infra:3306/zaqar?charset=utf8"
+  'drivers:message_store:redis/uri': 'redis://infra:6379'
+  'drivers:transport:wsgi/bind': '0.0.0.0'
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_uri': 'http://keystone:5000'
+  'keystone_authtoken/auth_url': 'http://keystone:5000'
+  'keystone_authtoken/auth_host': '---'
+  'keystone_authtoken/password': "%{lookup('openstack::users::zaqar::password')}"
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/user_domain_id': 'default'
+  'keystone_authtoken/username': 'zaqar'
+  'pooling:catalog/enable_virtual_pool': true
+  'signed_url/secret_key': 'notreallysecret'
+
+openstack::zun::settings:
+  'DEFAULT/verbose': true
+  'DEFAULT/debug': true
+  'DEFAULT/transport_url': "rabbit://zun:%{lookup('rabbitmq::users::zun::password')}@infra:5672/openstack"
+  'api/host_ip': "%{facts.networking.ip}"
+  'api/port': '9517'
+  'api/workers': 2
+  'database/connection': "mysql+pymysql://zun:%{lookup('mysql::users::zun::password')}@infra/zun?charset=utf8"
+  'keystone_auth/memcached_servers': 'infra:11211'
+  'keystone_auth/www_authenticate_uri': 'http://keystone:5000'
+  'keystone_auth/project_domain_name': 'default'
+  'keystone_auth/project_name': 'services'
+  'keystone_auth/user_domain_name': 'default'
+  'keystone_auth/password': "%{lookup('openstack::users::zun::password')}"
+  'keystone_auth/username': 'zun'
+  'keystone_auth/auth_url': 'http://keystone:5000'
+  'keystone_auth/auth_type': 'password'
+  'keystone_auth/auth_version': 'v3'
+  'keystone_auth/auth_protocol': 'http'
+  'keystone_auth/service_token_roles': 'services'
+  'keystone_auth/service_token_roles_required': true
+  'keystone_auth/endpoint_type': 'internalURL'
+  'keystone_authtoken/memcached_servers': 'infra:11211'
+  'keystone_authtoken/www_authenticate_uri': 'http://keystone:5000'
+  'keystone_authtoken/project_domain_name': 'default'
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/user_domain_name': 'default'
+  'keystone_authtoken/password': "%{lookup('openstack::users::zun::password')}"
+  'keystone_authtoken/username': 'zun'
+  'keystone_authtoken/auth_url': 'http://keystone:5000'
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_version': 'v3'
+  'keystone_authtoken/auth_protocol': 'http'
+  'keystone_authtoken/service_token_roles': 'services'
+  'keystone_authtoken/service_token_roles_required': true
+  'keystone_authtoken/endpoint_type': 'internalURL'
+  'oslo_concurrency/lock_path': '/var/lib/zun/tmp'
+  'oslo_messaging_notifications/driver': 'messaging'
+  'websocket_proxy/wsproxy_host': "%{facts.networking.ip}"
+  'websocket_proxy/wsproxy_port': '6784'
+  'websocket_proxy/base_url': 'ws://zun:67844'
+
+openstack::kuryr::settings:
+  'DEFAULT/verbose': true
+  'DEFAULT/debug': true
+  'DEFAULT/bindir': '/usr/local/libexec/kuryr'
+  'DEFAULT/capability_scope': 'local'
+  'DEFAULT/process_external_connectivity': true
+  'neutron/www_authenticate_uri': 'http://keystone:5000'
+  'neutron/auth_url': 'http://keystone:35357'
+  'neutron/username': 'kuryr'
+  'neutron/user_domain_name': 'default'
+  'neutron/password': "%{lookup('openstack::users::kuryr::password')}"
+  'neutron/project_name': 'services'
+  'neutron/project_domain_name': 'default'
+  'neutron/auth_type': 'password'
+
+openstack::swift::proxy::settings:
+  'pipeline:main/pipeline': 'catch_errors gatekeeper healthcheck proxy-logging cache listing_formats bulk tempurl authtoken keystone ratelimit crossdomain container_sync staticweb copy container-quotas account-quotas slo dlo versioned_writes symlink proxy-logging proxy-server'
+  'filter:authtoken/paste.filter_factory': 'keystonemiddleware.auth_token:filter_factory'
+  'filter:authtoken/signing_dir': '/etc/swift/sign'
+  'filter:authtoken/auth_uri': "http://keystone:5000"
+  'filter:authtoken/auth_url': "http://keystone:35357"
+  'filter:authtoken/memcached_servers': "infra:11211"
+  'filter:authtoken/auth_type': 'password'
+  'filter:authtoken/project_domain_id': 'default'
+  'filter:authtoken/user_domain_id': 'default'
+  'filter:authtoken/project_name': 'services'
+  'filter:authtoken/username': 'swift'
+  'filter:authtoken/password': "%{hiera('openstack::users::swift::password')}"
+  'filter:authtoken/delay_auth_decision': true
+  'filter:authtoken/cache': 'swift.cache'
+  'filter:keystone/use': 'egg:swift#keystoneauth'
+  'filter:keystone/operator_roles': 'admin, Member, _member_'
+  'filter:keystone/is_admin': true
+  'filter:keystone/cache': 'swift.cache'
+
+openstack::gnocchi::settings:
+  'DEFAULT/debug': true
+  'DEFAULT/verbose': true
+  'api/auth_mode': 'keystone'
+  'metricd/workers': 2
+  'database/backend': 'mysql'
+  'database/connection': "mysql+pymysql://gnocchi:%{hiera('mysql::users::gnocchi::password')}@infra/gnocchi"
+  'indexer/url': "mysql+pymysql://gnocchi:%{hiera('mysql::users::gnocchi::password')}@infra/gnocchi"
+  'storage/driver': 'redis'
+  'storage/redis_url': 'redis://infra:6379'
+  'keystone_authtoken/insecure': false
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_url': 'http://keystone:5000/v3'
+  'keystone_authtoken/auth_uri': 'http://keystone:5000'
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/user_domain_id': 'default'
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/username': 'gnocchi'
+  'keystone_authtoken/password': "%{lookup('openstack::users::gnocchi::password')}"
+  'keystone_authtoken/region_name': "%{lookup('openstack::region')}"
+  'keystone_authtoken/memcached_servers': 'infra:11211'
+  'keystone_authtoken/token_cache_time': 300
+  'keystone_authtoken/memcache_security_strategy': 'ENCRYPT'
+  'keystone_authtoken/memcache_secret_key': 'foobar'
+
+openstack::barbican::settings:
+  'DEFAULT/debug': true
+  'DEFAULT/verbose': true
+  'DEFAULT/host_href': 'http://barbican:9311'
+  'DEFAULT/sql_connection': "mysql+pymysql://barbican:%{hiera('mysql::users::barbican::password')}@infra/barbican"
+  'DEFAULT/transport_url': "rabbit://keystone:%{lookup('rabbitmq::users::barbican::password')}@infra:5672/openstack"
+  'keystone_authtoken/insecure': false
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_url': 'http://keystone:5000/v3'
+  'keystone_authtoken/auth_uri': 'http://keystone:5000'
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/user_domain_id': 'default'
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/username': 'barbican'
+  'keystone_authtoken/password': "%{lookup('openstack::users::barbican::password')}"
+  'keystone_authtoken/region_name': "%{lookup('openstack::region')}"
+  'keystone_authtoken/memcached_servers': 'infra:11211'
+  'keystone_authtoken/token_cache_time': 300
+  'keystone_authtoken/memcache_security_strategy': 'ENCRYPT'
+  'keystone_authtoken/memcache_secret_key': 'foobar'
+  'secretstore/namespace': 'barbican.secretstore.plugin'
+  'secretstore/enabled_secretstore_plugins': 'store_crypto'
+  'simple_crypto_plugin/kek': '64DTdVW/3KuJ9EWGCm37H4Si57swBzTojorL9BzCmxY='
+
+openstack::senlin::settings:
+  'DEFAULT/transport_url': "rabbit://senlin:%{lookup('rabbitmq::users::senlin::password')}@infra:5672/openstack"
+  'DEFAULT/debug': true
+  'DEFAULT/verbose': true
+  'database/connection': "mysql+pymysql://senlin:%{lookup('mysql::users::senlin::password')}@infra/senlin?charset=utf8"
+  'keystone_authtoken/insecure': false
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_url': 'http://keystone:5000/v3'
+  'keystone_authtoken/auth_uri': 'http://keystone:5000'
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/user_domain_id': 'default'
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/username': 'senlin'
+  'keystone_authtoken/password': "%{lookup('openstack::users::senlin::password')}"
+  'keystone_authtoken/region_name': "%{lookup('openstack::region')}"
+  'keystone_authtoken/memcached_servers': 'infra:11211'
+  'keystone_authtoken/token_cache_time': 300
+  'keystone_authtoken/memcache_security_strategy': 'ENCRYPT'
+  'keystone_authtoken/memcache_secret_key': 'foobar'
+  'authentication/auth_url': 'http://keystone:5000/v3'
+  'authentication/service_username': 'senlin'
+  'authentication/service_password': "%{lookup('openstack::users::senlin::password')}"
+  'authentication/service_project_name': 'services'
+  'oslo_messaging_notifications/driver': 'messaging'
+
+openstack::magnum::settings:
+  'DEFAULT/transport_url': "rabbit://magnum:%{lookup('rabbitmq::users::magnum::password')}@infra:5672/openstack"
+  'DEFAULT/verbose': true
+  'DEFAULT/debug': true
+  'api/host': '0.0.0.0'
+  'api/workers': 2
+  'conductor/workers': 2
+  'certificates/cert_manager_type': 'barbican'
+  'database/connection': "mysql+pymysql://magnum:%{lookup('mysql::users::magnum::password')}@infra/magnum?charset=utf8"
+  'keystone_auth/auth_type': 'password'
+  'keystone_auth/auth_url': 'http://keystone:5000/v3'
+  'keystone_auth/domain_id': '---'
+  'keystone_auth/domain_name': '---'
+  'keystone_auth/project_name': 'services'
+  'keystone_auth/project_domain_id': 'default'
+  'keystone_auth/user_domain_id': 'default'
+  'keystone_auth/username': 'magnum'
+  'keystone_auth/password': "%{lookup('openstack::users::magnum::password')}"
+  'keystone_authtoken/insecure': false
+  'keystone_authtoken/auth_type': 'password'
+  'keystone_authtoken/auth_url': 'http://keystone:5000/v3'
+  'keystone_authtoken/auth_uri': 'http://keystone:5000/v3'
+  'keystone_authtoken/project_domain_id': 'default'
+  'keystone_authtoken/user_domain_id': 'default'
+  'keystone_authtoken/project_name': 'services'
+  'keystone_authtoken/username': 'magnum'
+  'keystone_authtoken/region_name': "%{lookup('openstack::region')}"
+  'keystone_authtoken/memcached_servers': 'infra:11211'
+  'keystone_authtoken/token_cache_time': 300
+  'keystone_authtoken/memcache_security_strategy': 'ENCRYPT'
+  'keystone_authtoken/memcache_secret_key': 'foobar'
+  'trust/trustee_domain_name': 'magnum'
+  'trust/trustee_domain_admin_name': 'magnum_domain_admin'
+  'trust/trustee_domain_admin_password': "%{lookup('openstack::users::magnum::password')}"
+  'trust/trustee_keystone_interface': 'public'
+  'oslo_messaging_notifications/driver': 'messaging'
+  'barbican_client/region_name': 'RegionOne'
+  'cinder_client/region_name': 'RegionOne'
+  'glance_client/region_name': 'RegionOne'
+  'heat_client/region_name': 'RegionOne'
+  'magnum_client/region_name': 'RegionOne'
+  'neutron_client/region_name': 'RegionOne'
+  'nova_client/region_name': 'RegionOne'
