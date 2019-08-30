@@ -339,6 +339,7 @@ openstack::nova::settings:
   'libvirt/virt_type': 'qemu'
   'api/auth_strategy': 'keystone'
   'api/enable_instance_password': true
+  'filter_scheduler/enabled_filters': 'RetryFilter,AvailabilityZoneFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,JsonFilter'
 
 openstack::cinder::settings:
   'DEFAULT/enable_v3_api': true
